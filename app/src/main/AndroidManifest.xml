@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions to access internet from the emulator -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -16,6 +17,8 @@
         android:theme="@style/Theme.Projet2"
         android:name="org.mathieu.cleanrmapi.CleanRmApiApplication"
         tools:targetApi="31">
+
+        <!-- Main activity configuration -->
         <activity
             android:name="org.mathieu.cleanrmapi.MainActivity"
             android:exported="true"

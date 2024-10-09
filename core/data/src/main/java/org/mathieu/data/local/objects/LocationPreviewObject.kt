@@ -17,6 +17,11 @@ internal class LocationPreviewObject: RealmObject {
     var type: String = ""
     var dimension: String = ""
 }
+
+/**
+ * Converts a [LocationPreview] object to a [LocationPreviewObject] object.
+ * @return A [LocationPreviewObject] object.
+ */
 internal fun LocationPreview.toRealmObject() = LocationPreviewObject().also { obj ->
     obj.id = id
     obj.name = name
@@ -24,6 +29,10 @@ internal fun LocationPreview.toRealmObject() = LocationPreviewObject().also { ob
     obj.dimension = dimension
 }
 
+/**
+ * Converts a [LocationPreviewObject] object to a [LocationPreview] object.
+ * @return A [LocationPreview] object.
+ */
 internal fun LocationPreviewObject.toModel() = LocationPreview(
     id = id,
     name = name,

@@ -45,7 +45,10 @@ internal class CharacterObject: RealmObject {
     var locationPreview = LocationPreview(0, "", "", "")
 }
 
-
+/**
+ * Converts a [CharacterResponse] object to a [CharacterObject] object.
+ * @return A [CharacterObject] object.
+ */
 internal fun CharacterResponse.toRealmObject() = CharacterObject().also { obj ->
     obj.id = id
     obj.name = name
@@ -61,6 +64,10 @@ internal fun CharacterResponse.toRealmObject() = CharacterObject().also { obj ->
     obj.created = created
 }
 
+/**
+ * Converts a [LocationApi] object to a [CharacterObject] object.
+ * @return A [CharacterObject] object.
+ */
 internal fun CharacterObject.toModel() = Character(
     id = id,
     name = name,

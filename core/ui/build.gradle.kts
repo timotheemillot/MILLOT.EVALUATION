@@ -49,12 +49,12 @@ dependencies {
     implementation(project(":core:domain"))
 
     //Android
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
 
     //Compose
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation(platform("androidx.compose:compose-bom:2024.09.03"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -74,5 +74,6 @@ dependencies {
     //JetBrains
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.3")
 
 }

@@ -28,7 +28,16 @@ internal class LocationRepositoryImpl(
 
     /**
      * Fetches the next batch of characters and saves them to local storage.
-     * This function works as follows:
+     *
+     * The function follows these steps:
+     * 1. Tries to fetch the location from the local storage.
+     * 2. If not found locally, it fetches the location from the API.
+     * 3. Upon successful API retrieval, it saves the location to local storage.
+     * 4. If the location is still not found, it throws an exception.
+     *
+     * @param id The unique identifier for the location.
+     * @return A [Location] object.
+     * @throws Exception If the location is not found.
      */
     override suspend fun getLocation(id: Int): Location =
        locationLocal.getLocation(id)?.toModel()

@@ -36,7 +36,8 @@ val koinVersion: String by project
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.12.0")
+    //Android
+    implementation("androidx.core:core-ktx:1.13.1")
 
     //Koin
     implementation( "io.insert-koin:koin-androidx-compose:$koinVersion")

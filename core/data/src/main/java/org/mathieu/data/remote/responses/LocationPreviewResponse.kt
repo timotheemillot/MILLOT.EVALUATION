@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * Represents a preview of a location
+ * It is a lighter version of the location details.
  *
  * @property id The unique identifier for the location.
  * @property name The name of the location.

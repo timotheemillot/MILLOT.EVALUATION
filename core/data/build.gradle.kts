@@ -41,9 +41,9 @@ val realmVersion: String by project
 dependencies {
 
     //Android
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("androidx.datastore:datastore:1.0.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore:1.1.1")
 
     //Projects
     implementation(project(":core:domain"))
