@@ -14,14 +14,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,6 +38,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,23 +49,49 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import org.mathieu.characters.list.CharactersAction
+import org.mathieu.characters.list.CharactersState
+import org.mathieu.domain.models.character.LocationPreview
+import org.mathieu.domain.models.location.Location
+import org.mathieu.ui.Destination
 import org.mathieu.ui.composables.PreviewContent
+import org.mathieu.ui.navigate
 
 private typealias UIState = CharacterDetailsState
+private typealias UIAction = CharacterDetailsViewModel.CharactersDetailsAction
 
+/**
+ * Character details screen
+ * Show the character details and the location
+ * Display a vibration when the location card is clicked
+ */
 @Composable
 fun CharacterDetailsScreen(
     navController: NavController,
     id: Int
 ) {
-    val viewModel: CharacterDetailsViewModel = viewModel()
+    // Init state and view model to handle the screen
+    val viewModel: CharacterDetailsViewModel = viewModel<CharacterDetailsViewModel>()
     val state by viewModel.state.collectAsState()
 
     viewModel.init(characterId = id)
 
+    // Handle events
+    LaunchedEffect(viewModel) {
+        viewModel.events
+            .onEach { event ->
+                if (event is CharacterDetailsViewModel.NavigateToLocation)
+                    navController.navigate(destination = Destination.LocationDetails(event.locationId.toString()))
+            }.collect()
+    }
+
+    // Display the content
     CharacterDetailsContent(
         state = state,
-        onClickBack = navController::popBackStack
+        onClickBack = navController::popBackStack,
+        onAction = viewModel::handleAction // Pass the action handler to the content
     )
 
 }
@@ -66,10 +100,13 @@ fun CharacterDetailsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 private fun CharacterDetailsContent(
+    viewModel: CharacterDetailsViewModel = viewModel(),
     state: UIState = UIState(),
-    onClickBack: () -> Unit = { }
+    onClickBack: () -> Unit = { },
+    onAction: (UIAction) -> Unit = { }
 ) = Scaffold(topBar = {
 
+    // Display the top bar with the character name and a back button
     Row(
         modifier = Modifier
             .background(org.mathieu.ui.theme.Purple40)
@@ -158,6 +195,41 @@ private fun CharacterDetailsContent(
                 }
 
 
+            }
+        }
+        // Display the location card and trigger the action when clicked on it
+        LocationCard(state.locationPreview, onClick = { onAction(CharacterDetailsViewModel.ClickedOnLocation(state.locationPreview.id)) })
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LocationCard(locationPreview: LocationPreview, onClick: () -> Unit = { }) {
+    val haptic = LocalHapticFeedback.current
+    Card(
+
+        // Vibration au clic sur la carte
+        onClick = { onClick()
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .weight(2f)
+            ) {
+                Text(locationPreview.name , fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = locationPreview.type, fontSize = 14.sp)
+                    Spacer(Modifier.width(16.dp))
+                }
             }
         }
     }

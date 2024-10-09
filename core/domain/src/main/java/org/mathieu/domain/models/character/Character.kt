@@ -1,5 +1,6 @@
 package org.mathieu.domain.models.character
 
+
 /**
  * Represents a detailed characterization, typically derived from a data source or API.
  *
@@ -22,7 +23,8 @@ data class Character(
     val gender: CharacterGender,
     val origin: Pair<String, Int>,
     val location: Pair<String, Int>,
-    val avatarUrl: String
+    val avatarUrl: String,
+    val locationPreview : LocationPreview
 )
 
 /**
@@ -38,3 +40,18 @@ enum class CharacterStatus {
 enum class CharacterGender {
     Female, Male, Genderless, Unknown
 }
+
+/**
+ * Represents a simplified preview of a location, can be used to get the location of a specific character.
+ *
+ * @property id The unique identifier for the location.
+ * @property name The name of the location.
+ * @property type The type or category of the location.
+ * @property dimension The specific dimension or universe where this location exists.
+ */
+data class LocationPreview(
+    val id: Int,
+    val name: String,
+    val type: String,
+    val dimension: String
+)

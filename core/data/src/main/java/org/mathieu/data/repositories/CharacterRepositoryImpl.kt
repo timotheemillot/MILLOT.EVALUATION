@@ -12,9 +12,12 @@ import org.mathieu.data.local.objects.CharacterObject
 import org.mathieu.data.local.objects.toModel
 import org.mathieu.data.local.objects.toRealmObject
 import org.mathieu.data.remote.CharacterApi
+import org.mathieu.data.remote.LocationApi
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.domain.repositories.CharacterRepository
 import org.mathieu.domain.models.character.Character
+import org.mathieu.domain.models.character.LocationPreview
+import org.mathieu.domain.repositories.LocationRepository
 
 private const val CHARACTER_PREFS = "character_repository_preferences"
 private val nextPage = intPreferencesKey("next_characters_page_to_load")
@@ -26,7 +29,8 @@ private val Context.dataStore by preferencesDataStore(
 internal class CharacterRepositoryImpl(
     private val context: Context,
     private val characterApi: CharacterApi,
-    private val characterLocal: CharacterLocal
+    private val characterLocal: CharacterLocal,
+    private val locationApi: LocationApi,
 ) : CharacterRepository {
 
     override suspend fun getCharacters(): Flow<List<Character>> =
@@ -84,14 +88,36 @@ internal class CharacterRepositoryImpl(
      * @return The [Character] object representing the character details.
      * @throws Exception If the character cannot be found both locally and via the API.
      */
-    override suspend fun getCharacter(id: Int): Character =
-        characterLocal.getCharacter(id)?.toModel()
-            ?: characterApi.getCharacter(id = id)?.let { response ->
-                val obj = response.toRealmObject()
-                characterLocal.insert(obj)
-                obj.toModel()
-            }
-            ?: throw Exception("Character not found.")
+    override suspend fun getCharacter(id: Int): Character {
+        // Check if character is already stored in local database
+        if(characterLocal.getCharacter(id)?.toModel() != null) {
+            val character = characterLocal.getCharacter(id)
+            // Getting location details linked to the character from location API
+            val location = character?.let { locationApi.getLocation(it.locationId) }
+            character?.locationPreview = LocationPreview(
+                location?.id ?: 0,
+                location?.name ?: "",
+                location?.type ?: "",
+                location?.dimension ?: ""
+            )
+            return character?.toModel() ?: throw Exception("Character not found.")
+        }
+        // If character is not stored in local database, fetch it from the API
+        else {
+            val response = characterApi.getCharacter(id = id)
+            val obj = response!!.toRealmObject()
+            characterLocal.insert(obj)
+            val location = locationApi.getLocation(obj.locationId)
+            obj.locationPreview = LocationPreview(
+                location?.id ?: 0,
+                location?.name ?: "",
+                location?.type ?: "",
+                location?.dimension ?: ""
+            )
+            return obj.toModel()
+        }
+    }
+
 
 
 }
