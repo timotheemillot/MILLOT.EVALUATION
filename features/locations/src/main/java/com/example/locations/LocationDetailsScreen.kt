@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import org.mathieu.domain.models.character.Character
+import org.mathieu.ui.composables.TextLabel
 
 
 private typealias UIState = LocationDetailsState
@@ -66,6 +67,10 @@ fun LocationDetailsScreen(
     )
 }
 
+/**
+ * Location details content
+ * Show location details and list of characters
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationDetailsContent(
@@ -98,30 +103,14 @@ fun LocationDetailsContent(
     }
 }){ innerPadding ->
     Column(
-        modifier = Modifier.padding(innerPadding)
+        modifier = Modifier.padding(innerPadding),
     ) {
-        Text(
-            text = state.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
-        Text(
-            text = state.type,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
-        Text(
-            text = state.dimension,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
+        // Location details
+        TextLabel("Location name", state.name)
+        TextLabel("Location type", state.type)
+        TextLabel("Dimension", state.dimension)
 
+        // List of characters
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(contentPadding = innerPadding) {
                 items(state.residents) { character ->
@@ -132,6 +121,10 @@ fun LocationDetailsContent(
     }
 }
 
+/**
+ * Character card
+ * Show character details
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterCard(character: Character) {
