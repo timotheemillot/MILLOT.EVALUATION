@@ -1,5 +1,6 @@
 package org.mathieu.characters.details
 
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +53,7 @@ import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import org.mathieu.characters.R
 import org.mathieu.characters.list.CharactersAction
 import org.mathieu.characters.list.CharactersState
 import org.mathieu.domain.models.character.LocationPreview
@@ -202,14 +205,26 @@ private fun CharacterDetailsContent(
     }
 }
 
+/**
+ * Location card
+ * Display the location name and type
+ * Trigger the action when clicked on it
+ * Display a vibration and a sound when clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LocationCard(locationPreview: LocationPreview, onClick: () -> Unit = { }) {
     val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
+    val mediaPlayer = MediaPlayer.create(context, R.raw.click_button)
     Card(
 
-        // Vibration au clic sur la carte
+        // Vibration and sound when the card is clicked
         onClick = { onClick()
+            // Sound on click
+            mediaPlayer.start()
+
+            // Vibration on click
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)},
         modifier = Modifier
             .fillMaxWidth()
